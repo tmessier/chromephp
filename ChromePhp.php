@@ -391,6 +391,18 @@ class ChromePhp
 
     protected function _writeHeader($data)
     {
+        $maxLen   = 40000;
+        $totalLen = 0;
+        foreach ($data['rows'] as $i=>$row) {
+            $totalLen += strlen($row[0][0]);
+            if ($totalLen > $maxLen) {
+                $truncated = $maxLen - ($totalLen - strlen($row[0][0]));
+                $data['rows'][$i][0][0] = substr($data['rows'][$i][0][0], 0, $truncated);
+                $totalLen = $maxLen;
+            } else if ($totalLen == $maxLen) {
+                $data['rows'][$i][0][0] = '';
+            }
+        }
         header(self::HEADER_NAME . ': ' . $this->_encode($data));
     }
 
